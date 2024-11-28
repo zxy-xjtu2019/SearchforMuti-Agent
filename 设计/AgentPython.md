@@ -1,6 +1,14 @@
 ### Agent python函数设计
 > 目的：构建自己可以轻松使用的agent函数;不存在完美的函数，所以要求能使用、易说明即可
 
+
+#### 目录文件及定义
++ Agent
+  + llms:用于对模型
+    + jsonrepair:对于不合规范的json进行处理得到便于模型处理的json文件
+    + token_counter:针对AutoGpt进行修改，用于计算模型所调用的tokens数
+
+#### 类别定义
 + Agent
 > 该类定义Agent的构建、单agent行为、多Agent的操作；要求支持定制化
   + 属性
