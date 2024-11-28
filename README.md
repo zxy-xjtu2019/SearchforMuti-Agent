@@ -13,3 +13,13 @@
 ### 当前问题
 1. 多Agent交互协议的定义以及代码实现
 2. 只进行了粗略的设计，代码层面需要具体到输入返回值，并且试运行
+
+### 更新说明
++ 2024年11月28日：使用Agentverse作为基础框架、探索HiSim社交网络的相关说明
+  + 结论说明
+    + agentverse要求定义Agent、environment配置
+    + environment中配置agent调用顺序、信息共享方式、结束要求等
+    + HiSim在agentverse的基础上增加了environment在twitter上的限制
+  + 计划：
+    + 使用agentverse中对agent的构造函数构建自己的Agent，使用HiSim中的twitterAgent构建实验使用Agent
+    + 调研使用networkx中构建、存储图的方式已构建社交网络图
