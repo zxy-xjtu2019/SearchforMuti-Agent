@@ -1,6 +1,7 @@
 # from .agent import Agent
-from agents.registry import Registry
+from registry import Registry
 
 agent_registry = Registry(name="AgentRegistry")
 
-
+from .baseAgent import BaseAgent
+from .conversation import ConversationAgent

@@ -2,9 +2,9 @@
 
 import tiktoken
 from typing import List, Union, Dict
-from agentverse.logging import logger
-from agentverse.message import Message
-from agentverse.llms import LOCAL_LLMS, LOCAL_LLMS_MAPPING
+from agents.logging import logger
+from agents.messages import Message
+from agents.llms import LOCAL_LLMS, LOCAL_LLMS_MAPPING
 
 
 def count_string_tokens(prompt: str = "", model: str = "gpt-3.5-turbo") -> int:

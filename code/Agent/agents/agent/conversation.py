@@ -2,6 +2,8 @@ from __future__ import annotations
 from colorama import Fore
 
 # import logging
+import sys 
+sys.path.append("..")
 from agents.logging import get_logger
 import bdb
 from string import Template

@@ -1,4 +1,4 @@
-from agentverse.registry import Registry
+from agents.registry import Registry
 
 memory_registry = Registry(name="MemoryRegistry")
 

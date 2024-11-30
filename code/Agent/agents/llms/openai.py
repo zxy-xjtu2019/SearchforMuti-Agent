@@ -25,19 +25,15 @@ from .utils.llm_server_utils import get_llm_server_modelname
 try:
     from openai import OpenAI, AsyncOpenAI
     from openai import OpenAIError
-    from openai import AzureOpenAI, AsyncAzureOpenAI
 except ImportError:
     is_openai_available = False
     logger.warn(
         "openai package is not installed. Please install it via `pip install openai`"
     )
 else:
-    api_key = None
-    base_url = None
+    api_key = "sk-KiYD91Agj55TmXhK45B4C1DbDd43478aBdFb614f66C7F1D1"
+    base_url = "https://ssapi.onechat.shop/v1"
     model_name = None
-
-    DEFAULT_CLIENT = OpenAI(api_key=api_key, base_url=base_url)
-   
 
 class OpenAIChatArgs(BaseModelArgs):
     model: str = Field(default="gpt-3.5-turbo")
@@ -56,39 +52,15 @@ class OpenAIChatArgs(BaseModelArgs):
 #     best_of: int = Field(default=1)
 
 
-# @llm_registry.register("text-davinci-003")
-# class OpenAICompletion(BaseCompletionModel):
-#     args: OpenAICompletionArgs = Field(default_factory=OpenAICompletionArgs)
-
-#     def __init__(self, max_retry: int = 3, **kwargs):
-#         args = OpenAICompletionArgs()
-#         args = args.dict()
-#         for k, v in args.items():
-#             args[k] = kwargs.pop(k, v)
-#         if len(kwargs) > 0:
-#             logging.warning(f"Unused arguments: {kwargs}")
-#         super().__init__(args=args, max_retry=max_retry)
-
-#     def generate_response(self, prompt: str) -> LLMResult:
-#         response = openai.Completion.create(prompt=prompt, **self.args.dict())
-#         return LLMResult(
-#             content=response["choices"][0]["text"],
-#             send_tokens=response["usage"]["prompt_tokens"],
-#             recv_tokens=response["usage"]["completion_tokens"],
-#             total_tokens=response["usage"]["total_tokens"],
-#         )
-
-#     async def agenerate_response(self, prompt: str) -> LLMResult:
-#         response = await openai.Completion.acreate(prompt=prompt, **self.args.dict())
-#         return LLMResult(
-#             content=response["choices"][0]["text"],
-#             send_tokens=response["usage"]["prompt_tokens"],
-#             recv_tokens=response["usage"]["completion_tokens"],
-#             total_tokens=response["usage"]["total_tokens"],
-#         )
 
 
-@llm_registry.register("openai-chat")
+
+# To support your own local LLMs, register it here and add it into LOCAL_LLMS.
+@llm_registry.register("gpt-35-turbo")
+@llm_registry.register("gpt-3.5-turbo")
+@llm_registry.register("gpt-4")
+@llm_registry.register("vllm")
+@llm_registry.register("local")
 class OpenAIChat(BaseChatModel):
     args: OpenAIChatArgs = Field(default_factory=OpenAIChatArgs)
     client_args: Optional[Dict] = Field(
@@ -103,22 +75,16 @@ class OpenAIChat(BaseChatModel):
         args = OpenAIChatArgs()
         args = args.dict()
         client_args = {"api_key": api_key, "base_url": base_url}
-
+        # check if api_key is an azure key
+        
+       
         for k, v in args.items():
             args[k] = kwargs.pop(k, v)
         if len(kwargs) > 0:
             logger.warn(f"Unused arguments: {kwargs}")
-        if args["model"] in LOCAL_LLMS:
-            if args["model"] in LOCAL_LLMS_MAPPING:
-                client_args["api_key"] = LOCAL_LLMS_MAPPING[args["model"]]["api_key"]
-                client_args["base_url"] = LOCAL_LLMS_MAPPING[args["model"]]["base_url"]
-                is_azure = False
-            else:
-                raise ValueError(
-                    f"Model {args['model']} not found in LOCAL_LLMS_MAPPING"
-                )
+       
         super().__init__(
-            args=args, max_retry=max_retry, client_args=client_args, is_azure=is_azure
+            args=args, max_retry=max_retry, client_args=client_args, is_azure=False
         )
 
     @classmethod
@@ -157,17 +123,11 @@ class OpenAIChat(BaseChatModel):
     ) -> LLMResult:
         messages = self.construct_messages(prepend_prompt, history, append_prompt)
         logger.log_prompt(messages)
-        if self.is_azure:
-            openai_client = AzureOpenAI(
-                api_key=self.client_args["api_key"],
-                azure_endpoint=self.client_args["base_url"],
-                api_version="2024-02-15-preview",
-            )
-        else:
-            openai_client = OpenAI(
-                api_key=self.client_args["api_key"],
-                base_url=self.client_args["base_url"],
-            )
+       
+        openai_client = OpenAI(
+            api_key=self.client_args["api_key"],
+            base_url=self.client_args["base_url"],
+        )
         try:
             # Execute function call
             if functions != []:
@@ -254,17 +214,10 @@ class OpenAIChat(BaseChatModel):
         messages = self.construct_messages(prepend_prompt, history, append_prompt)
         logger.log_prompt(messages)
 
-        if self.is_azure:
-            async_openai_client = AsyncAzureOpenAI(
-                api_key=self.client_args["api_key"],
-                azure_endpoint=self.client_args["base_url"],
-                api_version="2024-02-15-preview",
-            )
-        else:
-            async_openai_client = AsyncOpenAI(
-                api_key=self.client_args["api_key"],
-                base_url=self.client_args["base_url"],
-            )
+        async_openai_client = AsyncOpenAI(
+            api_key=self.client_args["api_key"],
+            base_url=self.client_args["base_url"],
+        )
         try:
             if functions != []:
                 response = await async_openai_client.chat.completions.create(
@@ -433,14 +386,8 @@ class OpenAIChat(BaseChatModel):
     reraise=True,
 )
 def get_embedding(text: str, attempts=3) -> np.array:
-    if AZURE_API_KEY and AZURE_API_BASE:
-        client = AzureOpenAI(
-            api_key=AZURE_API_KEY,
-            azure_endpoint=AZURE_API_BASE,
-            api_version="2024-02-15-preview",
-        )
-    elif OPENAI_API_KEY:
-        client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL)
+
+    client = OpenAI(api_key=api_key, base_url=base_url)
     try:
         text = text.replace("\n", " ")
         embedding = client.embeddings.create(

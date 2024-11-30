@@ -1,4 +1,4 @@
-from agentverse.registry import Registry
+from agents.registry import Registry
 
 llm_registry = Registry(name="LLMRegistry")
 LOCAL_LLMS = [
