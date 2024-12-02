@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from pydantic import BaseModel, Field
 
-from agentverse.message import Message
+from agents.messages import Message
 
 
 class BaseMemoryManipulator(BaseModel):

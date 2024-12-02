@@ -5,11 +5,11 @@ from typing import List, TYPE_CHECKING
 
 from . import memory_manipulator_registry
 from .base import BaseMemoryManipulator
-from ..message import Message
+from ..messages import Message
 
 if TYPE_CHECKING:
-    from agentverse.memory import VectorStoreMemory
-    from agentverse.agents.reflection_agent import ReflectionAgent
+    from agents.memory import VectorStoreMemory
+    from agents.agent import ReflectionAgent
 
 logger = getLogger(__file__)
 
