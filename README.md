@@ -1,25 +1,22 @@
-### agent函数构建
-+ 完成基本设计概念性设计，需要落实到代码层面以便完善具体的类型定义
-+ 完成笼统性任务设计，缺少对真是任务处理时候的检查
-+ workflow相关技术还未完善，仍旧处于人工状态
-### 博弈论应用
-+ 博弈论相关理论研究
-+ workflow层面的应用
-+ Agent交互层面的应用
-### 工作计划
-1. 完成代码层面的基础构建
-2. 尝试使用该函数完成基本的短文本当中情感、立场的分析
-3. 对博弈论基本理论的研究
-### 当前问题
-1. 多Agent交互协议的定义以及代码实现
-2. 只进行了粗略的设计，代码层面需要具体到输入返回值，并且试运行
+### 需求说明
++ 实现基本社交网络多智能体模拟
++ 要求满足大规模、智能化
++ 各部分模块化，方便后期增加
+### 模块设计
+<center>
+<img  src = "设计/assets/Total.png" width ="1500" height = "800">
+</center>
 
-### 更新说明
-+ 2024年11月28日：使用Agentverse作为基础框架、探索HiSim社交网络的相关说明
-  + 结论说明
-    + agentverse要求定义Agent、environment配置
-    + environment中配置agent调用顺序、信息共享方式、结束要求等
-    + HiSim在agentverse的基础上增加了environment在twitter上的限制
-  + 计划：
-    + 使用agentverse中对agent的构造函数构建自己的Agent，使用HiSim中的twitterAgent构建实验使用Agent
-    + 调研使用networkx中构建、存储图的方式已构建社交网络图
++ Users:用户模块
++ PlatForm：社交平台模块
++ Channel：用户与社交平台沟通模块
++ SocialGraph：社交网络连接图模块
++ Diffusion：社交网络信息传播定义模块
++ Environment：用户环境与公共环境维护模块
++ Database：DB数据库操作模块
++ Log:平台与用户日志记录模块
++ Analysis：数据分析模块
+
+
+### 基本环境
+python == 3.10
