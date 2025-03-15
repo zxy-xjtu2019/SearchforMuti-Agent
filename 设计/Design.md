@@ -2,10 +2,58 @@
 > 负责模拟社交网络中用户的操作
 + Sub-moudle
   + Environment：负责用户观察到的个人环境与公共环境
+    + args:
+      + action(Actions)：负责定义社交网络中用户的行为
+    + func:
+      + async get_posts_env:获取所能看见的帖子
+        + args: None
+        + return: str:描述用户能够看见的帖子
+      + async get_followers_env:获取受关注的数量
+        + args: None
+        + return:  str:i have n followers
+      + async get_followes_env:获取受关注的数量
+        + args: None
+        + return:  str:i have n followes
+      + async to_text_prompt: 将关注以及帖子信息转化为str
+        + args:
+          + include_posts（bool）:是否包括帖子信息
+          + include_followers（bool）：是否包括被关注者信息
+          + include_follows（bool）：是否包括关注者信息
   + Actions：负责构建用户在社交网络中所能够执行的所用动作
+    + args:
+      + agent_id(int)
+      + channel(Channel)
+    + func:
+      + get_function_list：获取用户所有的操作集合
+        + args:None
+        + return: list[Function]:用户可以做的所有操作函数的集合，即Actions类中所有操作的函数集合
+      + async perform_action：将要做的操作通知Channel以便平台进行反应
+        + args:
+          + message(Message):要传递的信息
+          + type(str):要进行的操作类型
+        + return: dict:描述操作结果以及返回信息
+      + async action_name: 用户可以进行的所有操作
   + SocialGraph:负责维护整个社交网络中所有用户之间的关系
-  + Generator：负责初始化智能体，实验开始前使用用户数据构建对应的用户
+    + sub-moudle:
+      + Neo4jHandler:连接图数据库
+      + SocialGraph:社交网络连接图模块
+
   + Agent：社交网络中用户基本模拟单元
+    + args:
+      + agent_id(int)
+      + user_info(UserInfo)
+      + channel(Channel)
+      + platform(PlatForm)
+      + model_type(str)
+      + agent_graph(SocialGraph)
+      + action_prompt(str)
+      + env（Environment（Actions(agent_id,channel)））
+      + system_message(BaseMessage):调用大模型时的提示信息
+      + memory(ChatHistoryMemory):用户历史信息
+    + func
+      + perform_agent_graph_action:模型收到指令后模拟用户在社交平台操作的步骤
+        + args:None
+        + return: None
 + Base-args:
   + db_path(str)：数据库所在url
   + user_csv_path（str）：所有用户csv文件
@@ -17,6 +65,7 @@
       + promptPath(str)：agent提示词文件地址
     + return：
       + str:agent提示
+
   + generateGraph: 生成SocialGraph
     + args:
       + agent_info_path(str)：网络中用户基本信息url
@@ -36,7 +85,7 @@
       + timestep（int）:实验的轮数
       + infra(PlatForm)：实验的社交平台（持续运行）
     + return：None
-  + 大
+  + 
 ### PlatForm模块
 > 负责模拟社交平台的反应、接受用户操作
 + Sub-moudle:
